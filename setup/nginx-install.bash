@@ -73,26 +73,44 @@ apt-get update &>/dev/null
 apt-get -y install \
     sudo \
     curl \
-    gnupg \
-    make \
-    g++ \
-    gcc \
+    gnupg2 \
     ca-certificates \
-    apache2-utils \
-    logrotate \
-    build-essential \
-    python3-dev \
-    git \
+	debian-archive-keyring
     lsb-release &>/dev/null
 msg_ok "Installed Dependencies"
 
-msg_info "Adding nginx debian repositories"
-echo -e "deb https://nginx.org/packages/debian/ squeeze nginx" >> /etc/apt/sources.list
-echo -e "deb-src https://nginx.org/packages/debian/ squeeze nginx" >> /etc/apt/sources.list
+msg_info "Importing official nginx signing key"
+# Import an official nginx signing key so apt could verify the packages authenticity. Fetch the key:
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+msg_ok "Key imported"
+
+# Verify that the downloaded file contains the proper key:
+gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+
+echo "Key should be:"
+echo "pub   rsa2048 2011-08-19 [SC] [expires: 2024-06-14]"
+echo "      573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
+echo "uid                      nginx signing key <signing-key@nginx.com>"
+
+msg_info "Setup repository for nginx packages"
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://nginx.org/packages/debian `lsb_release -cs` nginx" \
+    | sudo tee /etc/apt/sources.list.d/nginx.list &>/dev/null
+	
+# If you would like to use mainline nginx packages, run the following command instead:
+# echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+# http://nginx.org/packages/mainline/debian `lsb_release -cs` nginx" \
+    # | sudo tee /etc/apt/sources.list.d/nginx.list
+	
+# Set up repository pinning to prefer our packages over distribution-provided ones
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+    | sudo tee /etc/apt/preferences.d/99nginx &>/dev/null
 msg_ok "Repositories added"
 
 msg_info "Installing nginx"
-apt-get -y install nginx &>/dev/null
+sudo apt update &>/dev/null
+sudo apt install nginx &>/dev/null
 msg_ok "Installed nginx"
 
 msg_info "Cleaning up"

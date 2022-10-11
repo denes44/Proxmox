@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo -e "Loading..."
-APP="Nginx Proxy Manager"
+APP="Nginx"
 var_disk="3"
 var_cpu="1"
 var_ram="1024"
