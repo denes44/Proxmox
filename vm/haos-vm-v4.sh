@@ -265,7 +265,7 @@ qm set $VMID \
 qm set $VMID \
   -boot order=scsi0 >/dev/null
 qm set $VMID -description "# Home Assistant OS
-### https://github.com/tteck/Proxmox
+### https://github.com/denes44/Proxmox
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D7EP4GF)" >/dev/null
 msg_ok "Created HAOS VM ${CL}${BL}(${HN})"
 if [ "$START_VM" == "yes" ]; then
