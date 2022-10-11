@@ -44,12 +44,12 @@ else
 fi
 function header_info {
 echo -e "${RD}
-    _   __      _               ____                           __  ___                                 
-   / | / /___ _(_)___  _  __   / __ \_________  _  ____  __   /  |/  /___ _____  ____ _____ ____  _____
-  /  |/ / __  / / __ \| |/_/  / /_/ / ___/ __ \| |/_/ / / /  / /|_/ / __  / __ \/ __  / __  / _ \/ ___/
- / /|  / /_/ / / / / />  <   / ____/ /  / /_/ />  </ /_/ /  / /  / / /_/ / / / / /_/ / /_/ /  __/ /    
-/_/ |_/\__, /_/_/ /_/_/|_|  /_/   /_/   \____/_/|_|\__, /  /_/  /_/\__,_/_/ /_/\__,_/\__, /\___/_/     
-      /____/                         v4           /____/                            /____/             
+    _   __      _            
+   / | / /___ _(_)___  _  __ 
+  /  |/ / __  / / __ \| |/_/ 
+ / /|  / /_/ / / / / />  <   
+/_/ |_/\__, /_/_/ /_/_/|_|  
+      /____/                
 ${CL}"
 }
 function msg_info() {
@@ -235,11 +235,9 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/denes44/Proxmox/main/ct
 msg_info "Starting LXC Container"
 pct start $CTID
 msg_ok "Started LXC Container"
-lxc-attach -n $CTID -- bash -c "$(wget -qLO - https://raw.githubusercontent.com/denes44/Proxmox/main/setup/nginx-proxy-manager-install.sh)" || exit
+lxc-attach -n $CTID -- bash -c "$(wget -qLO - https://raw.githubusercontent.com/denes44/Proxmox/main/setup/nginx-install.sh)" || exit
 IP=$(pct exec $CTID ip a s dev eth0 | sed -n '/inet / s/\// /p' | awk '{print $2}')
 pct set $CTID -description "# ${APP} LXC
 ### https://denes44.github.io/Proxmox/
 <a href='https://ko-fi.com/D1D7EP4GF'><img src='https://img.shields.io/badge/☕-Buy me a coffee-red' /></a>"
 msg_ok "Completed Successfully!\n"
-echo -e "${APP} should be reachable by going to the following URL.
-         ${BL}http://${IP}:81${CL} \n"
