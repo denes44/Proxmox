@@ -76,13 +76,13 @@ apt-get -y install \
     gnupg2 \
     ca-certificates \
 	debian-archive-keyring \
-    lsb-release
+    lsb-release  &>/dev/null
 msg_ok "Installed Dependencies"
 
 msg_info "Importing official nginx signing key"
 # Import an official nginx signing key so apt could verify the packages authenticity. Fetch the key:
 curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
-    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg &>/dev/null
 msg_ok "Imported official nginx signing key"
 
 # Verify that the downloaded file contains the proper key:
@@ -109,8 +109,8 @@ echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 
 msg_ok "Repository for nginx packages added"
 
 msg_info "Installing nginx"
-sudo apt update
-sudo apt install nginx
+sudo apt update &>/dev/null
+sudo apt install nginx &>/dev/null
 msg_ok "Installed nginx"
 
 msg_info "Cleaning up"
