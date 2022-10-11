@@ -60,7 +60,7 @@ done
 msg_ok "Set up Container OS"
 msg_ok "Network Connected: ${BL}$(hostname -I)"
 
-if nc -zw1 8.8.8.8 443; then  msg_ok "Internet Connected"; else  msg_error "Internet NOT Connected"; exit 1; fi;
+# if nc -zw1 8.8.8.8 443; then  msg_ok "Internet Connected"; else  msg_error "Internet NOT Connected"; exit 1; fi;
 RESOLVEDIP=$(nslookup "github.com" | awk -F':' '/^Address: / { matched = 1 } matched { print $2}' | xargs)
 if [[ -z "$RESOLVEDIP" ]]; then msg_error "DNS Lookup Failure";  else msg_ok "DNS Resolved github.com to $RESOLVEDIP";  fi;
 
@@ -142,7 +142,7 @@ PHOTOPRISM_AUTH_MODE='password'
 PHOTOPRISM_ADMIN_PASSWORD='changeme'
 PHOTOPRISM_HTTP_HOST='0.0.0.0'
 PHOTOPRISM_HTTP_PORT='2342'
-PHOTOPRISM_SITE_CAPTION='https://tteck.github.io/Proxmox/'
+PHOTOPRISM_SITE_CAPTION='https://denes44.github.io/Proxmox/'
 PHOTOPRISM_STORAGE_PATH='/var/lib/photoprism/storage'
 PHOTOPRISM_ORIGINALS_PATH='/var/lib/photoprism/photos/Originals'
 PHOTOPRISM_IMPORT_PATH='/var/lib/photoprism/photos/Import'

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Use to copy all data from a Zwavejs2MQTT LXC to a Z-wave JS UI LXC
 # run from the Proxmox Shell
-# bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/zwave-copy-data.sh)"
+# bash -c "$(wget -qLO - https://raw.githubusercontent.com/denes44/Proxmox/main/misc/zwave-copy-data.sh)"
 while true; do
     read -p "Use to copy all data from a Zwavejs2MQTT LXC to a Z-wave JS UI LXC. Proceed(y/n)?" yn
     case $yn in

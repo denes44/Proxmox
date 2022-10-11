@@ -59,7 +59,7 @@ done
 msg_ok "Set up Container OS"
 msg_ok "Network Connected: ${BL}$(hostname -I)"
 
-if nc -zw1 8.8.8.8 443; then  msg_ok "Internet Connected"; else  msg_error "Internet NOT Connected"; exit 1; fi;
+# if nc -zw1 8.8.8.8 443; then  msg_ok "Internet Connected"; else  msg_error "Internet NOT Connected"; exit 1; fi;
 RESOLVEDIP=$(nslookup "github.com" | awk -F':' '/^Address: / { matched = 1 } matched { print $2}' | xargs)
 if [[ -z "$RESOLVEDIP" ]]; then msg_error "DNS Lookup Failure";  else msg_ok "DNS Resolved github.com to $RESOLVEDIP";  fi;
 
@@ -75,7 +75,7 @@ apt-get install -y g++-multilib &>/dev/null
 msg_ok "Installed Dependencies"
 
 msg_info "Installing Daemon Sync Server"
-wget -qL https://github.com/tteck/Proxmox/raw/main/misc/daemonsync_2.2.0.0059_amd64.deb &>/dev/null
+wget -qL https://github.com/denes44/Proxmox/raw/main/misc/daemonsync_2.2.0.0059_amd64.deb &>/dev/null
 sudo dpkg -i daemonsync_2.2.0.0059_amd64.deb &>/dev/null
 msg_ok "Installed Daemon Sync Server"
 
