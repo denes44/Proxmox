@@ -76,7 +76,7 @@ apt-get -y install \
     gnupg2 \
     ca-certificates \
 	debian-archive-keyring
-    lsb-release &>/dev/null
+    lsb-release 
 msg_ok "Installed Dependencies"
 
 msg_info "Importing official nginx signing key"
@@ -109,8 +109,8 @@ echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 
 msg_ok "Repositories added"
 
 msg_info "Installing nginx"
-sudo apt update &>/dev/null
-sudo apt install nginx &>/dev/null
+sudo apt update
+sudo apt install nginx
 msg_ok "Installed nginx"
 
 msg_info "Cleaning up"
