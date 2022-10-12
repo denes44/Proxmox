@@ -250,8 +250,8 @@ qm set $VMID \
   -scsi0 ${DISK1_REF},size=2G >/dev/null
 qm set $VMID \
   -boot order=scsi0 >/dev/null
-qm set $VMID -description "# Mikrotik RouterOS
-### https://github.com/denes44/Proxmox" >/dev/null
+qm set $VMID -description "# Mikrotik RouterOS"
+
 msg_ok "Mikrotik RouterOS VM ${CL}${BL}(${HN})"
 if [ "$START_VM" == "yes" ]; then
 msg_info "Starting Mikrotik RouterOS VM"

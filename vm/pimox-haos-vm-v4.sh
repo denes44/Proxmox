@@ -241,9 +241,9 @@ qm set $VMID \
   -scsi0 ${DISK1_REF},size=32G >/dev/null
 qm set $VMID \
   -boot order=scsi0 >/dev/null
-qm set $VMID -description "# PiMox HAOS
-### https://github.com/denes44/Proxmox
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D7EP4GF)" >/dev/null
+qm set $VMID -description "# PiMox HAOS"
+
+
 msg_ok "Created HAOS VM ${CL}${BL}(${HN})"
 if [ "$START_VM" == "yes" ]; then
 msg_info "Starting Home Assistant OS VM"
