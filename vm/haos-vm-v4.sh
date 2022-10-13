@@ -264,7 +264,7 @@ qm set $VMID \
   -scsi0 ${DISK1_REF},discard=on,size=32G,ssd=1 >/dev/null
 qm set $VMID \
   -boot order=scsi0 >/dev/null
-qm set $VMID -description "# Home Assistant OS
+qm set $VMID -description "# Home Assistant OS"
 
 
 msg_ok "Created HAOS VM ${CL}${BL}(${HN})"
