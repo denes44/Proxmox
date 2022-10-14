@@ -59,7 +59,7 @@ done
 msg_ok "Set up Container OS"
 msg_ok "Network Connected: ${BL}$(hostname -I)"
 
-apt-get install -y dnsutils &>/dev/null
+apt-get install -y dnsutils
 
 RESOLVEDIP=$(nslookup "github.com" | awk -F':' '/^Address: / { matched = 1 } matched { print $2}' | xargs)
 if [[ -z "$RESOLVEDIP" ]]; then msg_error "DNS Lookup Failure";  else msg_ok "DNS Resolved github.com to $RESOLVEDIP";  fi;
@@ -76,13 +76,13 @@ apt-get install -y gnupg &>/dev/null
 msg_ok "Installed Dependencies"
 
 msg_info "Installing Mosquitto MQTT Broker"
-wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key &>/dev/null
-apt-key add mosquitto-repo.gpg.key &>/dev/null
+wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+apt-key add mosquitto-repo.gpg.key
 cd /etc/apt/sources.list.d/
-wget http://repo.mosquitto.org/debian/mosquitto-bullseye.list &>/dev/null
-apt-get update >/dev/null
-apt-get -y install mosquitto &>/dev/null
-apt-get -y install mosquitto-clients &>/dev/null
+wget http://repo.mosquitto.org/debian/mosquitto-bullseye.list
+apt-get update
+apt-get -y install mosquitto
+apt-get -y install mosquitto-clients
 msg_ok "Installed Mosquitto MQTT Broker"
 
 PASS=$(grep -w "root" /etc/shadow | cut -b6);
