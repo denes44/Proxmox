@@ -113,6 +113,8 @@ if ! pveam list $TEMPLATE_STORAGE | grep -q $TEMPLATE; then
   msg_ok "Downloaded LXC Template"
 fi
 
+echo ${TEMPLATE}
+
 DEFAULT_PCT_OPTIONS=(
   -arch $(dpkg --print-architecture))
   
