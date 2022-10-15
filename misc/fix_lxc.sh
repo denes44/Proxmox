@@ -46,4 +46,5 @@ function msg_error() {
 msg_info "Installing LXC Dependencies"
 apt-get install -y wget &>/dev/null
 apt-get install -y dnsutils &>/dev/null
+apt-get install -y nano &>/dev/null
 msg_ok "Installed LXC Dependencies"
