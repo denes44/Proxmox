@@ -343,7 +343,7 @@ advanced_settings() {
 
 install_script() {
   ssh_check
-  arch_check
+  #arch_check
   pve_check
   NEXTID=$(pvesh get /cluster/nextid)
   timezone=$(cat /etc/timezone)
@@ -428,7 +428,11 @@ build_container() {
     -unprivileged $CT_TYPE
     $PW
   "
-  bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/create_lxc.sh)" || exit
+  if [ "$(dpkg --print-architecture)" != "amd64" ]; then
+	bash -c "$(wget -qLO - https://raw.githubusercontent.com/denes44/Proxmox/main/ct/create_lxc_arm64.sh)" || exit
+  else
+    bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/create_lxc.sh)" || exit
+  fi
 
   LXC_CONFIG=/etc/pve/lxc/${CTID}.conf
   if [ "$CT_TYPE" == "0" ]; then
