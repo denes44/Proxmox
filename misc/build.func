@@ -107,8 +107,8 @@ echo_default() {
 }
 
 exit-script() {
-  clear
-  echo -e "⚠  User exited script \n"
+  # clear
+  echo -e "⚠  User exited script 3\n"
   exit
 }
 
