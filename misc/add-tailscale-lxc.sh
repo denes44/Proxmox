@@ -1,12 +1,30 @@
 #!/usr/bin/env bash
+
+# Copyright (c) 2021-2023 tteck
+# Author: tteck (tteckster)
+# License: MIT
+# https://github.com/tteck/Proxmox/raw/main/LICENSE
+
+function header_info {
+cat <<"EOF"
+  ______      _ __                __        
+ /_  __/___ _(_) /_____________ _/ /__      
+  / / / __ `/ / / ___/ ___/ __ `/ / _ \     
+ / / / /_/ / / (__  ) /__/ /_/ / /  __/     
+/_/  \__,_/_/_/____/\___/\__,_/_/\___/      
+                                            
+EOF
+}
+clear
+header_info
 echo -e "\e[1;33mThis script will add Tailscale to an existing LXC Container ONLY\e[0m"
 while true; do
-    read -p "Did you replace 106 with your LXC ID? Proceed(y/n)?" yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
+  read -p "Did you replace 106 with your LXC ID? Proceed(y/n)?" yn
+  case $yn in
+  [Yy]*) break ;;
+  [Nn]*) exit ;;
+  *) echo "Please answer yes or no." ;;
+  esac
 done
 
 set -o errexit
@@ -32,14 +50,14 @@ function msg() {
 
 CTID=$1
 CTID_CONFIG_PATH=/etc/pve/lxc/${CTID}.conf
-cat <<EOF >> $CTID_CONFIG_PATH
+cat <<EOF >>$CTID_CONFIG_PATH
 lxc.cgroup2.devices.allow: c 10:200 rwm
 lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
 EOF
 
-msg "⏳ Installing Tailscale..."
+msg "Installing Tailscale..."
 lxc-attach -n $CTID -- bash -c "$(curl -fsSL https://tailscale.com/install.sh)" &>/dev/null || exit
-msg "⌛ Installed Tailscale"
+msg "Installed Tailscale"
 sleep 2
 msg "\e[1;32m ✔ Completed Successfully!\e[0m"
 msg "\e[1;31m Reboot ${CTID} LXC to apply the changes, then run tailscale up in the LXC console\e[0m"

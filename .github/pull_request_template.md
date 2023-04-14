@@ -1,4 +1,4 @@
-# Pull Request Template
+## I wanted to make you aware that I am meticulous when it comes to merging code into the main branch, so please don't take it personally if I reject your request.
 
 ## Description
 

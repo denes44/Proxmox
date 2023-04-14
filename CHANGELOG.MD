@@ -1,7 +1,429 @@
-<a href="https://tteck.github.io/Proxmox/"><img src="https://github-readme-stats.vercel.app/api?username=tteck&theme=blue-green" height="130"/></a>
-
+<a href="https://tteck.github.io/Proxmox/"><img src="https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app/api?username=tteck&theme=blue-green" height="130"/></a>
 # Change Log
 All notable changes to this project will be documented in this file.
+
+## 2023-04-05
+
+### Changed
+
+- **Jellyfin LXC**
+  - Set Ubuntu 22.04 as default
+  - Use the Deb822 format jellyfin.sources configuration (jellyfin.list configuration has been obsoleted)
+
+## 2023-04-02
+
+### Changed
+
+- **Home Assistant OS VM**
+  - Include a choice within the "Advanced" settings to configure the CPU model between kvm64 (default) or host.
+
+## 2023-03-31
+
+### Changed
+
+- **Home Assistant OS VM**
+  - Include a choice within the "Advanced" settings to configure the disk cache between none (default) or Write Through.
+
+## 2023-03-27
+
+### Changed
+
+- **Removed Alpine-ESPHome LXC**
+  - Nonoperational
+- **All Scripts**
+  - Incorporate code that examines whether SSH is being used and, if yes, offers a suggestion against it without restricting or blocking its usage.
+
+## 2023-03-25
+
+### Changed
+
+- **Alpine-ESPHome LXC**
+  - NEW Script
+- **Alpine-Whoogle LXC**
+  - NEW Script
+
+## 2023-03-22
+
+### Changed
+
+- **The latest iteration of the scripts**
+  - Going forward, versioning will no longer be utilized in order to avoid breaking web-links in blogs and YouTube videos.
+  - The scripts have been made more legible as the repetitive code has been moved to function files, making it simpler to share among the scripts and hopefully easier to maintain. This also makes it simpler to contribute to the project.
+  - When a container is created with privileged mode enabled, the USB passthrough feature is automatically activated.
+
+## 2023-03-18
+
+### Changed
+
+- **Alpine-AdGuard Home LXC** (Thanks @nicedevil007)
+  - NEW Script
+- **Alpine-Docker LXC**
+  - NEW Script
+- **Alpine-Zigbee2MQTT LXC**
+  - NEW Script
+
+## 2023-03-15
+
+### Changed
+
+- **Alpine-Grafana LXC** (Thanks @nicedevil007)
+  - NEW Script
+
+## 2023-03-10
+
+### Changed
+
+- **Proxmox LXC Updater** 
+  - You can use the command line to exclude multiple containers simultaneously.
+
+## 2023-03-08
+
+### Changed
+
+- **Proxmox CPU Scaling Governor**
+  - Menu options dynamically based on the available scaling governors.
+
+## 2023-03-07
+
+### Changed
+
+- **Alpine-Vaultwarden LXC**
+  - NEW Script
+- **All LXC Scripts**
+  - Retrieve the time zone from Proxmox and configure the container to use the same time zone
+
+## 2023-02-24
+
+### Changed
+
+- **qBittorrent LXC** (Thanks @romka777)
+  - NEW Script
+- **Jackett LXC** (Thanks @romka777)
+  - NEW Script
+
+## 2023-02-23
+
+### Changed
+
+- **Proxmox LXC Updater** 
+  - Skip all templates, allowing for the starting, updating, and shutting down of containers to be resumed automatically.
+  - Exclude an additional container by adding the CTID at the end of the shell command ( -s 103).
+
+## 2023-02-16
+
+### Changed
+
+- **RSTPtoWEB LXC** 
+  - NEW Script
+- **go2rtc LXC** 
+  - NEW Script
+
+## 2023-02-12
+
+### Changed
+
+- **OliveTin** 
+  - NEW Script
+
+## 2023-02-10
+
+### Changed
+
+- **Home Assistant OS VM** 
+  - Code Refactoring
+
+## 2023-02-05
+
+### Changed
+
+- **Devuan LXC** 
+  - NEW Script
+
+## 2023-02-02
+
+### Changed
+
+- **Audiobookshelf LXC** 
+  - NEW Script
+- **Rocky Linux LXC** 
+  - NEW Script
+
+## 2023-01-28
+
+### Changed
+
+- **LXC Cleaner** 
+  - Code refactoring to give the user the option to choose whether cache or logs will be deleted for each app/service.
+  - Leaves directory structure intact
+
+## 2023-01-27
+
+### Changed
+
+- **LXC Cleaner** 
+  - NEW Script
+
+## 2023-01-26
+
+### Changed
+
+- **ALL LXC's** 
+  - Add an option to disable IPv6 (Advanced)
+
+## 2023-01-25
+
+### Changed
+
+- **Home Assistant OS VM** 
+  - switch to v5
+  - add an option to set MTU size (Advanced)
+  - add arch check (no ARM64) (issue from community.home-assistant.io)
+  - add check to insure VMID isn't already used before VM creation (Advanced) (issue from forum.proxmox.com)
+  - code refactoring
+- **PiMox Home Assistant OS VM** 
+  - switch to v5
+  - add an option to set MTU size (Advanced)
+  - add arch check (no AMD64)
+  - add pve check (=>7.2)
+  - add check to insure VMID isn't already used before VM creation (Advanced)
+  - code refactoring
+- **All LXC's** 
+  - add arch check (no ARM64) (issue from forum.proxmox.com)
+
+## 2023-01-24
+
+### Changed
+
+- **Transmission LXC** 
+  - NEW Script
+
+## 2023-01-23
+
+### Changed
+
+- **ALL LXC's** 
+  - Add [Midnight Commander (mc)](https://www.linuxcommand.org/lc3_adv_mc.php)
+
+## 2023-01-22
+
+### Changed
+
+- **Autobrr LXC** 
+  - NEW Script
+
+## 2023-01-21
+
+### Changed
+
+- **Kavita LXC** 
+  - NEW Script
+
+## 2023-01-19
+
+### Changed
+
+- **SABnzbd LXC** 
+  - NEW Script
+
+## 2023-01-17
+
+### Changed
+
+- **Homer LXC** 
+  - NEW Script
+
+## 2023-01-14
+
+### Changed
+
+- **Tdarr LXC** 
+  - NEW Script
+- **Deluge LXC** 
+  - NEW Script
+
+## 2023-01-13
+
+### Changed
+
+- **Lidarr LXC** 
+  - NEW Script
+- **Prowlarr LXC** 
+  - NEW Script
+- **Radarr LXC** 
+  - NEW Script
+- **Readarr LXC** 
+  - NEW Script
+- **Sonarr LXC** 
+  - NEW Script
+- **Whisparr LXC** 
+  - NEW Script
+
+## 2023-01-12
+
+### Changed
+
+- **ALL LXC's** 
+  - Add an option to set MTU size (Advanced)
+
+## 2023-01-11
+
+### Changed
+
+- **Home Assistant Core LXC** 
+  - Auto Initialize
+- **Cronicle Primary/Worker LXC** 
+  - NEW Script
+
+## 2023-01-09
+
+### Changed
+
+- **ALL LXC's** 
+  - v5
+- **k0s Kubernetes LXC** 
+  - NEW Script
+- **Podman LXC** 
+  - NEW Script
+
+## 2023-01-04
+
+### Changed
+
+- **YunoHost LXC** 
+  - NEW Script
+
+## 2022-12-31
+
+### Changed
+
+- **v5 Scripts** (Testing before moving forward https://github.com/tteck/Proxmox/discussions/881)
+  - Adguard Home LXC
+  - Docker LXC
+  - Home Assistant Core LXC
+  - PhotoPrism LXC
+  - Shinobi NVR LXC
+  - Vaultwarden LXC
+
+## 2022-12-27
+
+### Changed
+
+- **Home Assistant Container LXC** 
+  - Add an option to use Fuse Overlayfs (ZFS) (Advanced)
+
+- **Docker LXC** 
+  - Add an option to use Fuse Overlayfs (ZFS) (Advanced)
+  - If the LXC is created Privileged, the script will automatically set up USB passthrough.
+
+## 2022-12-22
+
+### Changed
+
+- **All LXC's** 
+  - Add an option to run the script in Verbose Mode (Advanced)
+
+## 2022-12-20
+
+### Changed
+
+- **Hyperion LXC** 
+  - NEW Script
+
+## 2022-12-17
+
+### Changed
+
+- **Home Assistant Core LXC** 
+  - Linux D-Bus Message Broker
+  - Mariadb & PostgreSQL Ready
+  - Bluetooth Ready
+  - Fix for Inconsistent Dependency Versions (dbus-fast & bleak)
+
+## 2022-12-16
+
+### Changed
+
+- **Home Assistant Core LXC** 
+  - Python 3.10.8
+
+## 2022-12-09
+
+### Changed
+
+- **Change Detection LXC** 
+  - NEW Script
+
+## 2022-12-03
+
+### Changed
+
+- **All LXC's** 
+  - Add options to set DNS Server IP Address and DNS Search Domain (Advanced)
+
+## 2022-11-27
+
+### Changed
+
+- **Shinobi LXC** 
+  - NEW Script
+
+## 2022-11-24
+
+### Changed
+
+- **Home Assistant OS VM** 
+  - Add option to set machine type during VM creation (Advanced)
+
+## 2022-11-23
+
+### Changed
+
+- **All LXC's** 
+  - Add option to enable root ssh access during LXC creation (Advanced)
+
+## 2022-11-21
+
+### Changed
+
+- **Proxmox LXC Updater** 
+  - Now updates Ubuntu, Debian, Devuan, Alpine Linux, CentOS-Rocky-Alma, Fedora, ArchLinux [(@Uruknara)](https://github.com/tteck/Proxmox/commits?author=Uruknara)
+
+## 2022-11-13
+
+### Changed
+
+- **All LXC's** 
+  - Add option to continue upon Internet NOT Connected
+
+## 2022-11-11
+
+### Changed
+
+- **HA Bluetooth Integration Preparation** 
+  - [NEW Script](https://github.com/tteck/Proxmox/discussions/719)
+
+## 2022-11-04
+
+### Changed
+
+- **Scrypted LXC** 
+  - NEW Script
+
+## 2022-11-01
+
+### Changed
+
+- **Alpine LXC** 
+  - NEW Script
+- **Arch LXC** 
+  - NEW Script
+
+## 2022-10-27
+
+### Changed
+
+- **Container & Core Restore from Backup** 
+  - [NEW Scripts](https://github.com/tteck/Proxmox/discussions/674)
 
 ## 2022-10-07
 
