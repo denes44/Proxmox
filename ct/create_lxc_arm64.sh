@@ -113,7 +113,7 @@ msg_ok "Using ${BL}$CONTAINER_STORAGE${CL} ${GN}for Container Storage."
   # msg_ok "Downloaded LXC Template"
 # fi
 
-TEMPLATE="debian-11-rootfs.tar.xz"
+TEMPLATE="debian-11-rootfs_arm64.tar.xz"
 
 DEFAULT_PCT_OPTIONS=(
   -arch $(dpkg --print-architecture))
