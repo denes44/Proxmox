@@ -42,7 +42,9 @@ $STD apt-get install -y \
   libopenjp2-7 \
   libtiff5 \
   libturbojpeg0-dev \
-  liblzma-dev
+  liblzma-dev \
+  whiptail \
+  wget
 msg_ok "Installed Dependencies"
 
 msg_info "Installing Linux D-Bus Message Broker"
