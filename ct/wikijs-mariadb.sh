@@ -19,7 +19,7 @@ EOF
 }
 header_info
 echo -e "Loading..."
-APP="Wikijs"
+APP="Wikijs-mariadb"
 var_disk="3"
 var_cpu="1"
 var_ram="512"
