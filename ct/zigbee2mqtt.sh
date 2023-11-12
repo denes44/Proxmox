@@ -24,13 +24,13 @@ var_disk="4"
 var_cpu="2"
 var_ram="1024"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
 
 function default_settings() {
-  CT_TYPE="1"
+  CT_TYPE="0"
   PW=""
   CT_ID=$NEXTID
   HN=$NSAPP
@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""

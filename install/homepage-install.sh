@@ -18,24 +18,28 @@ $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
 $STD apt-get install -y git
+$STD apt-get install -y make
+$STD apt-get install -y g++
+$STD apt-get install -y gcc
+$STD apt-get install -y ca-certificates
+$STD apt-get install -y gnupg
 msg_ok "Installed Dependencies"
 
 msg_info "Setting up Node.js Repository"
-$STD bash <(curl -fsSL https://deb.nodesource.com/setup_16.x)
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" >/etc/apt/sources.list.d/nodesource.list
 msg_ok "Set up Node.js Repository"
 
 msg_info "Installing Node.js"
+$STD apt-get update
 $STD apt-get install -y nodejs
 $STD npm install -g pnpm
 msg_ok "Installed Node.js"
 
 msg_info "Installing Homepage (Patience)"
-RELEASE=$(curl -s https://api.github.com/repos/benphelps/homepage/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
-wget -q https://github.com/benphelps/homepage/archive/refs/tags/v${RELEASE}.tar.gz
-$STD tar -xvf v${RELEASE}.tar.gz
-mkdir -p /opt/homepage
-cp -r homepage-${RELEASE}/* /opt/homepage
-rm -rf v${RELEASE}.tar.gz homepage-${RELEASE}
+cd /opt
+$STD git clone https://github.com/benphelps/homepage.git
 cd /opt/homepage
 mkdir -p config
 cp /opt/homepage/src/skeleton/* /opt/homepage/config
@@ -62,7 +66,7 @@ $STD systemctl enable --now homepage
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

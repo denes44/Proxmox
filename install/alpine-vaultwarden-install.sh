@@ -25,16 +25,17 @@ msg_ok "Installed Dependencies"
 
 msg_info "Installing Alpine-Vaultwarden"
 $STD apk add vaultwarden
-cat <<EOF >/etc/conf.d/vaultwarden
-export DATA_FOLDER=/var/lib/vaultwarden
-export WEB_VAULT_FOLDER=/var/lib/vaultwarden/web-vault
-export WEB_VAULT_ENABLED=true
-export ADMIN_TOKEN=''
-export ROCKET_ADDRESS=0.0.0.0
-EOF
-$STD rc-service vaultwarden start
-$STD rc-update add vaultwarden default
+sed -i -e 's/# export ADMIN_TOKEN=.*/export ADMIN_TOKEN='\'''\''/' -e '/^# export ROCKET_ADDRESS=0\.0\.0\.0/s/^# //' -e 's|export WEB_VAULT_ENABLED=.*|export WEB_VAULT_ENABLED=true|' /etc/conf.d/vaultwarden
 msg_ok "Installed Alpine-Vaultwarden"
 
+msg_info "Installing Web-Vault"
+$STD apk add vaultwarden-web-vault
+msg_ok "Installed Web-Vault" 
+
+msg_info "Starting Alpine-Vaultwarden"
+$STD rc-service vaultwarden start
+$STD rc-update add vaultwarden default
+msg_ok "Started Alpine-Vaultwarden"
+
 motd_ssh
-root
+customize

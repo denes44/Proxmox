@@ -24,7 +24,7 @@ var_disk="0.5"
 var_cpu="1"
 var_ram="256"
 var_os="alpine"
-var_version="3.17"
+var_version="3.18"
 variables
 color
 catch_errors
@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -58,7 +58,7 @@ function update_script() {
   LXCIP=$(ip a s dev eth0 | awk '/inet / {print $2}' | cut -d/ -f1)
   while true; do
     CHOICE=$(
-      whiptail --title "SUPPORT" --menu "Select option" 11 58 3 \
+      whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --menu "Select option" 11 58 3 \
         "1" "Check for Grafana Updates" \
         "2" "Allow 0.0.0.0 for listening" \
         "3" "Allow only ${LXCIP} for listening" 3>&2 2>&1 1>&3

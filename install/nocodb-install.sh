@@ -17,22 +17,13 @@ msg_info "Installing Dependencies"
 $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
-$STD apt-get install -y git
 msg_ok "Installed Dependencies"
 
-msg_info "Setting up Node.js Repository"
-$STD bash <(curl -fsSL https://deb.nodesource.com/setup_16.x)
-msg_ok "Set up Node.js Repository"
-
-msg_info "Installing Node.js"
-$STD sudo apt-get install -y nodejs git make g++ gcc
-msg_ok "Installed Node.js"
-
 msg_info "Installing NocoDB"
-$STD git clone https://github.com/nocodb/nocodb-seed
-mv nocodb-seed /opt/nocodb
+mkdir -p /opt/nocodb
 cd /opt/nocodb
-$STD npm install
+curl -s http://get.nocodb.com/linux-x64 -o nocodb -L
+chmod +x nocodb
 msg_ok "Installed NocoDB"
 
 msg_info "Creating Service"
@@ -45,15 +36,15 @@ Type=simple
 Restart=always
 User=root
 WorkingDirectory=/opt/nocodb
-ExecStart=/usr/bin/npm start
+ExecStart=/opt/nocodb/./nocodb
 
 [Install]
 WantedBy=multi-user.target" >$service_path
-systemctl enable --now nocodb.service &>/dev/null
+systemctl enable -q --now nocodb.service &>/dev/null
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

@@ -23,7 +23,7 @@ var_disk="4"
 var_cpu="2"
 var_ram="1024"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -53,6 +53,18 @@ function default_settings() {
 function update_script() {
 header_info
 if [[ ! -f /etc/apt/sources.list.d/sonarr.list ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
+read -r -p "Are you updating Sonarr v4? <y/N> " prompt
+if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+  msg_info "Updating $APP v4"
+  systemctl stop sonarr.service
+  wget -q -O SonarrV4.tar.gz 'https://services.sonarr.tv/v1/download/develop/latest?version=4&os=linux'
+  tar -xzf SonarrV4.tar.gz
+  cp -r Sonarr/* /usr/lib/sonarr/bin
+  rm -rf Sonarr SonarrV4.tar.gz
+  systemctl start sonarr.service
+  msg_ok "Updated $APP v4"
+  exit
+fi  
 msg_info "Updating $APP LXC"
 apt-get update &>/dev/null
 apt-get -y upgrade &>/dev/null

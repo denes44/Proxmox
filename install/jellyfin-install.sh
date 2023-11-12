@@ -20,7 +20,7 @@ $STD apt-get install -y gnupg
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
-if [[ -z "$(grep -w "100000" /proc/self/uid_map)" ]]; then
+if [[ "$CTTYPE" == "0" ]]; then
   msg_info "Setting Up Hardware Acceleration"
   $STD apt-get -y install \
     va-driver-all \
@@ -37,7 +37,7 @@ if [[ -z "$(grep -w "100000" /proc/self/uid_map)" ]]; then
 fi
 
 msg_info "Installing Jellyfin"
-VERSION="$( awk -F'=' '/^UBUNTU_CODENAME=/{ print $NF }' /etc/os-release )"
+VERSION="$( awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release )"
 # If the keyring directory is absent, create it
 if [[ ! -d /etc/apt/keyrings ]]; then
     mkdir -p /etc/apt/keyrings
@@ -59,7 +59,7 @@ $STD apt-get install -y jellyfin
 msg_ok "Installed Jellyfin"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

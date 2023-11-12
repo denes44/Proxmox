@@ -23,7 +23,7 @@ var_disk="16"
 var_cpu="2"
 var_ram="2048"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -56,7 +56,7 @@ function update_script() {
     msg_error "No ${APP} Installation Found!"
     exit
   fi
-  UPD=$(whiptail --title "UPDATE" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 4 \
+  UPD=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "UPDATE" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 4 \
     "1" "Update ALL Containers" ON \
     "2" "Remove ALL Unused Images" OFF \
     "3" "Install HACS" OFF \
@@ -88,19 +88,20 @@ function update_script() {
     exit
   fi
   if [ "$UPD" == "3" ]; then
-    msg_info "Installing Home Assistant Comunity Store (HACS)"
+    msg_info "Installing Home Assistant Community Store (HACS)"
     apt update &>/dev/null
     apt install unzip &>/dev/null
     cd /var/lib/docker/volumes/hass_config/_data
     bash <(curl -fsSL https://get.hacs.xyz) &>/dev/null
-    msg_ok "Installed Home Assistant Comunity Store (HACS)"
+    msg_ok "Installed Home Assistant Community Store (HACS)"
     echo -e "\n Reboot Home Assistant and clear browser cache then Add HACS integration.\n"
     exit
   fi
   if [ "$UPD" == "4" ]; then
     IP=$(hostname -I | awk '{print $1}')
     msg_info "Installing FileBrowser"
-    curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash &>/dev/null
+    RELEASE=$(curl -fsSL https://api.github.com/repos/filebrowser/filebrowser/releases/latest | grep -o '"tag_name": ".*"' | sed 's/"//g' | sed 's/tag_name: //g')
+    curl -fsSL https://github.com/filebrowser/filebrowser/releases/download/v2.23.0/linux-amd64-filebrowser.tar.gz | tar -xzv -C /usr/local/bin &>/dev/null
     filebrowser config init -a '0.0.0.0' &>/dev/null
     filebrowser config set -a '0.0.0.0' &>/dev/null
     filebrowser users add admin changeme --perm.admin &>/dev/null

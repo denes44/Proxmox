@@ -20,11 +20,11 @@ EOF
 header_info
 echo -e "Loading..."
 APP="Paperless-ngx"
-var_disk="8"
+var_disk="10"
 var_cpu="2"
 var_ram="2048"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -59,7 +59,7 @@ function update_script() {
   RELEASE=$(curl -s https://api.github.com/repos/paperless-ngx/paperless-ngx/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
   SER=/etc/systemd/system/paperless-task-queue.service
 
-  UPD=$(whiptail --title "SUPPORT" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 2 \
+  UPD=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 2 \
     "1" "Update Paperless-ngx to $RELEASE" ON \
     "2" "Paperless-ngx Credentials" OFF \
     3>&1 1>&2 2>&3)
@@ -80,6 +80,7 @@ function update_script() {
     cp -r /opt/paperless/paperless.conf paperless-ngx/
     cp -r paperless-ngx/* /opt/paperless/
     cd /opt/paperless
+    sed -i 's/scipy==1.8.1/scipy==1.10.1/g' requirements.txt
     sed -i -e 's|-e git+https://github.com/paperless-ngx/django-q.git|git+https://github.com/paperless-ngx/django-q.git|' /opt/paperless/requirements.txt
     pip install -r requirements.txt &>/dev/null
     cd /opt/paperless/src

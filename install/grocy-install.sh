@@ -17,15 +17,13 @@ msg_info "Installing Dependencies"
 $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
-$STD apt-get install -y apache2
-$STD apt-get install -y unzip
 $STD apt-get install -y apt-transport-https
-$STD apt-get install -y lsb-release
 msg_ok "Installed Dependencies"
 
 msg_info "Installing PHP 8.1"
+VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
 curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
-sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+echo -e "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $VERSION main" >/etc/apt/sources.list.d/php.list
 $STD apt-get update
 $STD apt-get install -y php8.1
 $STD apt-get install -y libapache2-mod-php8.1
@@ -36,8 +34,9 @@ $STD apt-get install -y php8.1-mbstring
 msg_ok "Installed PHP 8.1"
 
 msg_info "Installing grocy"
-wget -q https://releases.grocy.info/latest
-$STD unzip latest -d /var/www/html
+latest=$(curl -s https://api.github.com/repos/grocy/grocy/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
+wget -q https://github.com/grocy/grocy/releases/download/v${latest}/grocy_${latest}.zip
+$STD unzip grocy_${latest}.zip -d /var/www/html
 chown -R www-data:www-data /var/www/html
 cp /var/www/html/config-dist.php /var/www/html/data/config.php
 chmod +x /var/www/html/update.sh
@@ -63,10 +62,10 @@ systemctl reload apache2
 msg_ok "Installed grocy"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove
 $STD apt-get autoclean
-rm -rf /root/latest
+rm -rf /root/grocy_${latest}.zip
 msg_ok "Cleaned"

@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -51,14 +51,14 @@ function default_settings() {
 }
 
 function update_script() {
-if [[ ! -d /opt/cronicle ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
-UPD=$(whiptail --title "SUPPORT" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 2 \
+UPD=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 2 \
   "1" "Update ${APP}" ON \
   "2" "Install ${APP} Worker" OFF \
   3>&1 1>&2 2>&3)
 
 if [ "$UPD" == "1" ]; then
 header_info
+if [[ ! -d /opt/cronicle ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
 msg_info "Updating ${APP}"
 /opt/cronicle/bin/control.sh upgrade &>/dev/null
 msg_ok "Updated ${APP}"
@@ -73,13 +73,18 @@ apt-get install -y git &>/dev/null
 apt-get install -y make &>/dev/null
 apt-get install -y g++ &>/dev/null
 apt-get install -y gcc &>/dev/null
+apt-get install -y ca-certificates &>/dev/null
+apt-get install -y gnupg &>/dev/null
 msg_ok "Installed Dependencies"
 
 msg_info "Setting up Node.js Repository"
-bash <(curl -fsSL https://deb.nodesource.com/setup_16.x) &>/dev/null
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" >/etc/apt/sources.list.d/nodesource.list
 msg_ok "Set up Node.js Repository"
 
 msg_info "Installing Node.js"
+apt-get update &>/dev/null
 apt-get install -y nodejs &>/dev/null
 msg_ok "Installed Node.js"
 
@@ -94,7 +99,7 @@ sed -i "s/localhost:3012/${IP}:3012/g" /opt/cronicle/conf/config.json
 cp /opt/cronicle/bin/cronicled.init /etc/init.d/cronicled &>/dev/null
 chmod 775 /etc/init.d/cronicled
 update-rc.d cronicled defaults &>/dev/null
-msg_ok "Installed Cronicle Worker on $hostname"
+msg_ok "Installed Cronicle Worker"
 echo -e "\n Add Masters secret key to /opt/cronicle/conf/config.json \n"
 exit
 fi

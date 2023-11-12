@@ -23,7 +23,7 @@ var_disk="8"
 var_cpu="2"
 var_ram="2048"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -67,7 +67,7 @@ msg_ok "Updated ${APP} LXC"
 msg_info "Starting ${APP} LXC"
 systemctl start autobrr.service
 msg_ok "Started ${APP} LXC"
-msg_ok "Update Successfull"
+msg_ok "Updated Successfully"
 exit
 }
 

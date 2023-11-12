@@ -8,28 +8,28 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 function header_info {
 clear
 cat <<"EOF"
-    ____                            
-   / __ \___ _   ____  ______  ____ 
-  / / / / _ \ | / / / / / __ `/ __ \
- / /_/ /  __/ |/ / /_/ / /_/ / / / /
-/_____/\___/|___/\__,_/\__,_/_/ /_/ 
-                                    
+    ___                    __  ____ _    ______
+   /   | ____ ____  ____  / /_/ __ \ |  / / __ \
+  / /| |/ __ `/ _ \/ __ \/ __/ / / / | / / /_/ /
+ / ___ / /_/ /  __/ / / / /_/ /_/ /| |/ / _, _/
+/_/  |_\__, /\___/_/ /_/\__/_____/ |___/_/ |_|
+      /____/
 EOF
 }
 header_info
 echo -e "Loading..."
-APP="Devuan"
-var_disk="2"
-var_cpu="1"
-var_ram="512"
-var_os="devuan"
-var_version="4.0"
+APP="AgentDVR"
+var_disk="8"
+var_cpu="2"
+var_ram="2048"
+var_os="ubuntu"
+var_version="22.04"
 variables
 color
 catch_errors
 
 function default_settings() {
-  CT_TYPE="1"
+  CT_TYPE="0"
   PW=""
   CT_ID=$NEXTID
   HN=$NSAPP
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -52,11 +52,8 @@ function default_settings() {
 
 function update_script() {
 header_info
-if [[ ! -d /var ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
-msg_info "Updating $APP LXC"
-apt-get update &>/dev/null
-apt-get -y upgrade &>/dev/null
-msg_ok "Updated $APP LXC"
+if [[ ! -d /opt/agentdvr ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
+msg_error "There is currently no update path available."
 exit
 }
 
@@ -65,3 +62,5 @@ build_container
 description
 
 msg_ok "Completed Successfully!\n"
+echo -e "${APP}${CL} should be reachable by going to the following URL.
+         ${BL}http://${IP}:8090${CL} \n"

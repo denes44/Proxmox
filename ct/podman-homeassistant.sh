@@ -41,7 +41,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -56,7 +56,7 @@ function default_settings() {
 
 function update_script() {
   if [[ ! -f /etc/systemd/system/homeassistant.service ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
-  UPD=$(whiptail --title "UPDATE" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 4 \
+  UPD=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "UPDATE" --radiolist --cancel-button Exit-Script "Spacebar = Select" 11 58 4 \
   "1" "Update system and containers" ON \
   "2" "Install HACS" OFF \
   "3" "Install FileBrowser" OFF \
@@ -67,15 +67,14 @@ if [ "$UPD" == "1" ]; then
   msg_info "Updating ${APP} LXC"
   apt-get update &>/dev/null
   apt-get -y upgrade &>/dev/null
-  msg_ok "Updated ${APP} LXC"
-  msg_ok "Update os system Successfull"
+  msg_ok "Updated Successfully"
 
   msg_info "Updating All Containers\n"
   CONTAINER_LIST="${1:-$(podman ps -q)}"
   for container in ${CONTAINER_LIST}; do
     CONTAINER_IMAGE="$(podman inspect --format "{{.Config.Image}}" --type container ${container})"
     RUNNING_IMAGE="$(podman inspect --format "{{.Image}}" --type container "${container}")"
-    podman pull "docker.io/${CONTAINER_IMAGE}"
+    podman pull "${CONTAINER_IMAGE}"
     LATEST_IMAGE="$(podman inspect --format "{{.Id}}" --type image "${CONTAINER_IMAGE}")"
     if [[ "${RUNNING_IMAGE}" != "${LATEST_IMAGE}" ]]; then
       echo "Updating ${container} image ${CONTAINER_IMAGE}"
@@ -86,12 +85,12 @@ if [ "$UPD" == "1" ]; then
   exit
 fi
 if [ "$UPD" == "2" ]; then
-  msg_info "Installing Home Assistant Comunity Store (HACS)"
+  msg_info "Installing Home Assistant Community Store (HACS)"
   apt update &>/dev/null
   apt install unzip &>/dev/null
   cd /var/lib/containers/storage/volumes/hass_config/_data
   bash <(curl -fsSL https://get.hacs.xyz) &>/dev/null
-  msg_ok "Installed Home Assistant Comunity Store (HACS)"
+  msg_ok "Installed Home Assistant Community Store (HACS)"
   echo -e "\n Reboot Home Assistant and clear browser cache then Add HACS integration.\n"
   exit
 fi

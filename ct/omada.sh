@@ -22,8 +22,8 @@ APP="Omada"
 var_disk="8"
 var_cpu="2"
 var_ram="2048"
-var_os="ubuntu"
-var_version="20.04"
+var_os="debian"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -53,12 +53,27 @@ function default_settings() {
 function update_script() {
 header_info
 if [[ ! -d /opt/tplink ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
-msg_info "Updating ${APP} LXC"
-apt-get update &>/dev/null
-apt-get -y upgrade &>/dev/null
-msg_ok "Updated ${APP} LXC"
-msg_ok "Update Successfull"
+latest_url=$(curl -fsSL "https://www.tp-link.com/us/support/download/omada-software-controller/" | grep -o 'https://.*x64.deb' | head -n1)
+latest_version=$(basename "${latest_url}" | sed -e 's/.*ller_//;s/_Li.*//')
+if [ -z "${latest_version}" ]; then
+  msg_error "It seems that the server (tp-link.com) might be down. Please try again at a later time."
+  exit
+fi
+installed_version=$(dpkg -l | grep omada | awk '{print $3}')
+
+if [ "v${installed_version}" = "${latest_version}" ]; then
+  msg_info "Installed version (v${installed_version}) is the same as the latest version (${latest_version})"
+  sleep 2
+  msg_ok "Omada Controller is already up to date"
+  exit
+else
+  echo -e "Updating Omada Controller to ${latest_version}"
+  wget -qL ${latest_url}
+  dpkg -i Omada_SDN_Controller_${latest_version}_Linux_x64.deb
+  rm -rf Omada_SDN_Controller_${latest_version}_Linux_x64.deb
+  echo -e "Updated Omada Controller to ${latest_version}"
 exit
+fi
 }
 
 start

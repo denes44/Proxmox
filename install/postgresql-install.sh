@@ -21,15 +21,16 @@ $STD apt-get install -y gnupg
 msg_ok "Installed Dependencies"
 
 msg_info "Setting up PostgreSQL Repository"
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-$STD apt-key add <(curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc)
+VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
+echo "deb http://apt.postgresql.org/pub/repos/apt ${VERSION}-pgdg main" >/etc/apt/sources.list.d/pgdg.list
+curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor --output /etc/apt/trusted.gpg.d/postgresql.gpg
 msg_ok "Setup PostgreSQL Repository"
 
 msg_info "Installing PostgreSQL"
 $STD apt-get update
 $STD apt-get install -y postgresql
 
-cat <<EOF >/etc/postgresql/15/main/pg_hba.conf
+cat <<EOF >/etc/postgresql/16/main/pg_hba.conf
 # PostgreSQL Client Authentication Configuration File
 local   all             postgres                                peer
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
@@ -48,7 +49,7 @@ host    replication     all             127.0.0.1/32            scram-sha-256
 host    replication     all             ::1/128                 scram-sha-256
 EOF
 
-cat <<EOF >/etc/postgresql/15/main/postgresql.conf
+cat <<EOF >/etc/postgresql/16/main/postgresql.conf
 # -----------------------------
 # PostgreSQL configuration file
 # -----------------------------
@@ -57,10 +58,10 @@ cat <<EOF >/etc/postgresql/15/main/postgresql.conf
 # FILE LOCATIONS
 #------------------------------------------------------------------------------
 
-data_directory = '/var/lib/postgresql/15/main'       
-hba_file = '/etc/postgresql/15/main/pg_hba.conf'     
-ident_file = '/etc/postgresql/15/main/pg_ident.conf'   
-external_pid_file = '/var/run/postgresql/15-main.pid'                   
+data_directory = '/var/lib/postgresql/16/main'       
+hba_file = '/etc/postgresql/16/main/pg_hba.conf'     
+ident_file = '/etc/postgresql/16/main/pg_ident.conf'   
+external_pid_file = '/var/run/postgresql/16-main.pid'                   
 
 #------------------------------------------------------------------------------
 # CONNECTIONS AND AUTHENTICATION
@@ -106,7 +107,7 @@ log_timezone = 'Etc/UTC'
 # PROCESS TITLE
 #------------------------------------------------------------------------------
 
-cluster_name = '15/main'                
+cluster_name = '16/main'                
 
 #------------------------------------------------------------------------------
 # CLIENT CONNECTION DEFAULTS
@@ -136,13 +137,13 @@ read -r -p "Would you like to add Adminer? <y/N> " prompt
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
   msg_info "Installing Adminer"
   $STD apt install -y adminer
-  $STD sudo a2enconf adminer
-  $STD systemctl reload apache2
+  $STD a2enconf adminer
+  systemctl reload apache2
   msg_ok "Installed Adminer"
 fi
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

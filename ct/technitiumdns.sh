@@ -23,7 +23,7 @@ var_disk="2"
 var_cpu="1"
 var_ram="512"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -56,17 +56,14 @@ if [[ ! -d /etc/dns ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
 msg_info "Updating ${APP}"
 
 if ! dpkg -s aspnetcore-runtime-7.0 > /dev/null 2>&1; then
-    wget -q https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-    dpkg -i packages-microsoft-prod.deb
-    apt-get update
-    apt-get install -y aspnetcore-runtime-7.0
+    wget -q https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb
+    dpkg -i packages-microsoft-prod.deb &>/dev/null
+    apt-get update &>/dev/null
+    apt-get install -y aspnetcore-runtime-7.0 &>/dev/null
     rm packages-microsoft-prod.deb
 fi
-wget -q https://download.technitium.com/dns/DnsServerPortable.tar.gz
-tar -zxf DnsServerPortable.tar.gz -C /etc/dns/ &>/dev/null
-rm -rf DnsServerPortable.tar.gz
-systemctl restart dns.service
-msg_ok "Update Successfull"
+bash <(curl -fsSL https://download.technitium.com/dns/install.sh) &>/dev/null
+msg_ok "Updated Successfully"
 exit
 }
 

@@ -8,22 +8,22 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 function header_info {
 clear
 cat <<"EOF"
-    ____  _______________  __      _       ____________ 
-   / __ \/ ___/_  __/ __ \/ /_____| |     / / ____/ __ )
-  / /_/ /\__ \ / / / /_/ / __/ __ \ | /| / / __/ / __  |
- / _, _/___/ // / / ____/ /_/ /_/ / |/ |/ / /___/ /_/ / 
-/_/ |_|/____//_/ /_/    \__/\____/|__/|__/_____/_____/  
-                                                        
+   ____            __    _ 
+  / __ \____ ___  / /_  (_)
+ / / / / __ `__ \/ __ \/ /
+/ /_/ / / / / / / /_/ / /
+\____/_/ /_/ /_/_.___/_/
+
 EOF
 }
 header_info
 echo -e "Loading..."
-APP="RSTPtoWEB"
+APP="Ombi"
 var_disk="4"
-var_cpu="2"
-var_ram="2048"
+var_cpu="1"
+var_ram="1024"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -52,11 +52,8 @@ function default_settings() {
 
 function update_script() {
 header_info
-if [[ ! -d /var ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
-msg_info "Updating $APP LXC"
-apt-get update &>/dev/null
-apt-get -y upgrade &>/dev/null
-msg_ok "Updated $APP LXC"
+if [[ ! -d /opt/ombi ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
+msg_error "There is currently no update path available."
 exit
 }
 
@@ -65,5 +62,5 @@ build_container
 description
 
 msg_ok "Completed Successfully!\n"
-echo -e "${APP} Setup should be reachable by going to the following URL.
-         ${BL}http://${IP}:8083 ${CL} \n"
+echo -e "${APP} should be reachable by going to the following URL.
+         ${BL}http://${IP}:5000${CL} \n"

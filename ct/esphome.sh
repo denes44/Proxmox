@@ -23,7 +23,7 @@ var_disk="4"
 var_cpu="2"
 var_ram="1024"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -52,19 +52,22 @@ function default_settings() {
 
 function update_script() {
 header_info
-if [[ ! -f /usr/local/bin/esphome ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
+if [[ ! -f /etc/systemd/system/esphomeDashboard.service ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
 msg_info "Stopping ESPHome"
 systemctl stop esphomeDashboard
 msg_ok "Stopped ESPHome"
 
 msg_info "Updating ESPHome"
-pip3 install esphome --upgrade &>/dev/null
+if [[ -d /srv/esphome ]]; then
+  source /srv/esphome/bin/activate &>/dev/null
+fi
+pip3 install -U esphome &>/dev/null
 msg_ok "Updated ESPHome"
 
 msg_info "Starting ESPHome"
 systemctl start esphomeDashboard
 msg_ok "Started ESPHome"
-msg_ok "Update Successfull"
+msg_ok "Updated Successfully"
 exit
 }
 

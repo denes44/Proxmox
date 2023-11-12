@@ -24,7 +24,7 @@ var_disk="0.3"
 var_cpu="1"
 var_ram="256"
 var_os="alpine"
-var_version="3.17"
+var_version="3.18"
 variables
 color
 catch_errors
@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -57,7 +57,7 @@ function update_script() {
   fi
   while true; do
     CHOICE=$(
-      whiptail --title "SUPPORT" --menu "Select option" 11 58 2 \
+      whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --menu "Select option" 11 58 2 \
         "1" "Update Vaultwarden" \
         "2" "Reset ADMIN_TOKEN" 3>&2 2>&1 1>&3
     )
@@ -73,7 +73,7 @@ function update_script() {
       exit
       ;;
     2)
-      if NEWTOKEN=$(whiptail --passwordbox "Setup your ADMIN_TOKEN (make it strong)" 10 58 3>&1 1>&2 2>&3); then
+      if NEWTOKEN=$(whiptail --backtitle "Proxmox VE Helper Scripts" --passwordbox "Setup your ADMIN_TOKEN (make it strong)" 10 58 3>&1 1>&2 2>&3); then
         if [[ -z "$NEWTOKEN" ]]; then exit-script; fi
         if ! command -v argon2 >/dev/null 2>&1; then apk add argon2 &>/dev/null; fi
         TOKEN=$(echo -n ${NEWTOKEN} | argon2 "$(openssl rand -base64 32)" -e -id -k 19456 -t 2 -p 1)

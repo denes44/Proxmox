@@ -17,15 +17,18 @@ msg_info "Installing Dependencies"
 $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
+$STD apt-get install -y python3-libtorrent
 msg_ok "Installed Dependencies"
 
-msg_info "Installing Python3-pip"
-$STD apt-get install -y python3-pip
-msg_ok "Installed Python3-pip"
+msg_info "Updating Python3"
+$STD apt-get install -y \
+  python3 \
+  python3-dev \
+  python3-pip
+msg_ok "Updated Python3"
 
 msg_info "Installing Deluge"
 $STD pip install deluge[all]
-$STD pip install lbry-libtorrent
 msg_ok "Installed Deluge"
 
 msg_info "Creating Service"
@@ -65,7 +68,7 @@ systemctl enable --now -q deluge-web.service
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

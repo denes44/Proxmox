@@ -20,16 +20,18 @@ $STD apt-get install -y mc
 $STD apt-get install -y git
 msg_ok "Installed Dependencies"
 
-msg_info "Setting up Node.js Repository"
-$STD bash <(curl -fsSL https://deb.nodesource.com/setup_16.x)
-msg_ok "Set up Node.js Repository"
-
-msg_info "Installing Node.js"
-$STD apt-get install -y nodejs git make g++ gcc
+msg_info "Installing Node.js (Patience)"
+$STD apt-get install -y npm
+$STD npm cache clean -f
+$STD npm install -g n
+$STD n 16.20.1
+$STD npm install -g pnpm
+ln -sf /usr/local/bin/node /usr/bin/node
 msg_ok "Installed Node.js"
 
 msg_info "Installing Yarn"
 $STD npm install --global yarn
+ln -sf /usr/local/bin/yarn /usr/bin/yarn
 msg_ok "Installed Yarn"
 
 msg_info "Installing Dashy (Patience)"
@@ -52,12 +54,11 @@ ExecStart=/usr/bin/yarn start
 [Install]
 WantedBy=multi-user.target
 EOF
-$STD systemctl enable dashy
-systemctl start dashy
+systemctl -q --now enable dashy
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

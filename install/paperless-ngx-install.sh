@@ -5,7 +5,7 @@
 # License: MIT
 # https://github.com/tteck/Proxmox/raw/main/LICENSE
 
-source /dev/stdin <<< "$FUNCTIONS_FILE_PATH"
+source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 color
 verb_ip6
 catch_errors
@@ -15,52 +15,52 @@ update_os
 
 msg_info "Installing Python3"
 $STD apt-get install -y --no-install-recommends \
-	python3 \
-	python3-pip \
-	python3-dev \
-	python3-setuptools \
-	python3-wheel 
+  python3 \
+  python3-pip \
+  python3-dev \
+  python3-setuptools \
+  python3-wheel
 msg_ok "Installed Python3"
 
 msg_info "Installing Dependencies (Patience)"
 $STD apt-get install -y --no-install-recommends \
-	redis \
-	postgresql \
-	build-essential \
-        imagemagick \
-	fonts-liberation \
-	optipng \
-	gnupg \
-	libpq-dev \
-	libmagic-dev \
-	mime-support \
-	libzbar0 \
-	poppler-utils \
-	default-libmysqlclient-dev \
-	automake \
-	libtool \
-	pkg-config \
-	git \
-	curl \
-	libtiff-dev \
-	libpng-dev \
-	libleptonica-dev \
-	sudo \
-	mc
+  redis \
+  postgresql \
+  build-essential \
+  imagemagick \
+  fonts-liberation \
+  optipng \
+  gnupg \
+  libpq-dev \
+  libmagic-dev \
+  mime-support \
+  libzbar0 \
+  poppler-utils \
+  default-libmysqlclient-dev \
+  automake \
+  libtool \
+  pkg-config \
+  git \
+  curl \
+  libtiff-dev \
+  libpng-dev \
+  libleptonica-dev \
+  sudo \
+  mc
 msg_ok "Installed Dependencies"
 
 msg_info "Installing OCR Dependencies (Patience)"
 $STD apt-get install -y --no-install-recommends \
-	unpaper \
-	ghostscript \
-	icc-profiles-free \
-	qpdf \
-	liblept5 \
-	libxml2 \
-	pngquant \
-	zlib1g \
-	tesseract-ocr \
-	tesseract-ocr-eng
+  unpaper \
+  ghostscript \
+  icc-profiles-free \
+  qpdf \
+  liblept5 \
+  libxml2 \
+  pngquant \
+  zlib1g \
+  tesseract-ocr \
+  tesseract-ocr-eng
 msg_ok "Installed OCR Dependencies"
 
 msg_info "Installing JBIG2"
@@ -76,59 +76,81 @@ msg_ok "Installed JBIG2"
 msg_info "Installing Paperless-ngx (Patience)"
 Paperlessngx=$(wget -q https://github.com/paperless-ngx/paperless-ngx/releases/latest -O - | grep "title>Release" | cut -d " " -f 5)
 cd /opt
-$STD wget https://github.com/paperless-ngx/paperless-ngx/releases/download/$Paperlessngx/paperless-ngx-$Paperlessngx.tar.xz 
+$STD wget https://github.com/paperless-ngx/paperless-ngx/releases/download/$Paperlessngx/paperless-ngx-$Paperlessngx.tar.xz
 $STD tar -xf paperless-ngx-$Paperlessngx.tar.xz -C /opt/
 mv paperless-ngx paperless
 rm paperless-ngx-$Paperlessngx.tar.xz
 cd /opt/paperless
+sed -i 's/scipy==1.8.1/scipy==1.10.1/g' requirements.txt
 ## python 3.10+ doesn't like the '-e', so we remove it from this the requirements file
 sed -i -e 's|-e git+https://github.com/paperless-ngx/django-q.git|git+https://github.com/paperless-ngx/django-q.git|' /opt/paperless/requirements.txt
 $STD pip install --upgrade pip
 $STD pip install -r requirements.txt
 curl -s -o /opt/paperless/paperless.conf https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/main/paperless.conf.example
+mkdir -p {consume,data,media,static}
+sed -i -e 's|#PAPERLESS_REDIS=redis://localhost:6379|PAPERLESS_REDIS=redis://localhost:6379|' /opt/paperless/paperless.conf
+sed -i -e "s|#PAPERLESS_CONSUMPTION_DIR=../consume|PAPERLESS_CONSUMPTION_DIR=/opt/paperless/consume|" /opt/paperless/paperless.conf
+sed -i -e "s|#PAPERLESS_DATA_DIR=../data|PAPERLESS_DATA_DIR=/opt/paperless/data|" /opt/paperless/paperless.conf
+sed -i -e "s|#PAPERLESS_MEDIA_ROOT=../media|PAPERLESS_MEDIA_ROOT=/opt/paperless/media|" /opt/paperless/paperless.conf
+sed -i -e "s|#PAPERLESS_STATICDIR=../static|PAPERLESS_STATICDIR=/opt/paperless/static|" /opt/paperless/paperless.conf
 msg_ok "Installed Paperless-ngx"
 
 msg_info "Installing Natural Language Toolkit (Patience)"
 $STD python3 -m nltk.downloader -d /usr/share/nltk_data all
 msg_ok "Installed Natural Language Toolkit"
 
-msg_info "Setting up database"
-DB_USER=paperless
-DB_PASS="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13)"
+msg_info "Setting up PostgreSQL database"
 DB_NAME=paperlessdb
+DB_USER=paperless
+DB_PASS="$(openssl rand -base64 18 | cut -c1-13)"
+SECRET_KEY="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)"
 $STD sudo -u postgres psql -c "CREATE ROLE $DB_USER WITH LOGIN PASSWORD '$DB_PASS';"
 $STD sudo -u postgres psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER TEMPLATE template0;"
-echo "Paperless-ngx Database User" >>~/paperless.creds
-echo $DB_USER >>~/paperless.creds
-echo "Paperless-ngx Database Password" >>~/paperless.creds
-echo $DB_PASS >>~/paperless.creds
-echo "Paperless-ngx Database Name" >>~/paperless.creds
-echo $DB_NAME >>~/paperless.creds
-mkdir -p {consume,media}
-sed -i -e 's|#PAPERLESS_DBNAME=paperless|PAPERLESS_DBNAME=paperlessdb|' /opt/paperless/paperless.conf
+echo "" >>~/paperless.creds
+echo -e "Paperless-ngx Database User: \e[32m$DB_USER\e[0m" >>~/paperless.creds
+echo -e "Paperless-ngx Database Password: \e[32m$DB_PASS\e[0m" >>~/paperless.creds
+echo -e "Paperless-ngx Database Name: \e[32m$DB_NAME\e[0m" >>~/paperless.creds
+sed -i -e 's|#PAPERLESS_DBHOST=localhost|PAPERLESS_DBHOST=localhost|' /opt/paperless/paperless.conf
+sed -i -e 's|#PAPERLESS_DBPORT=5432|PAPERLESS_DBPORT=5432|' /opt/paperless/paperless.conf
+sed -i -e "s|#PAPERLESS_DBNAME=paperless|PAPERLESS_DBNAME=$DB_NAME|" /opt/paperless/paperless.conf
+sed -i -e "s|#PAPERLESS_DBUSER=paperless|PAPERLESS_DBUSER=$DB_USER|" /opt/paperless/paperless.conf
 sed -i -e "s|#PAPERLESS_DBPASS=paperless|PAPERLESS_DBPASS=$DB_PASS|" /opt/paperless/paperless.conf
-SECRET_KEY="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)"
 sed -i -e "s|#PAPERLESS_SECRET_KEY=change-me|PAPERLESS_SECRET_KEY=$SECRET_KEY|" /opt/paperless/paperless.conf
 cd /opt/paperless/src
 $STD python3 manage.py migrate
-msg_ok "Set up database"
+msg_ok "Set up PostgreSQL database"
+
+read -r -p "Would you like to add Adminer? <y/N> " prompt
+if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+  msg_info "Installing Adminer"
+  $STD apt install -y adminer
+  $STD a2enconf adminer
+  systemctl reload apache2
+  IP=$(hostname -I | awk '{print $1}')
+  echo "" >>~/paperless.creds
+  echo -e "Adminer Interface: \e[32m$IP/adminer/\e[0m" >>~/paperless.creds
+  echo -e "Adminer System: \e[32mPostgreSQL\e[0m" >>~/paperless.creds
+  echo -e "Adminer Server: \e[32mlocalhost:5432\e[0m" >>~/paperless.creds
+  echo -e "Adminer Username: \e[32m$DB_USER\e[0m" >>~/paperless.creds
+  echo -e "Adminer Password: \e[32m$DB_PASS\e[0m" >>~/paperless.creds
+  echo -e "Adminer Database: \e[32m$DB_NAME\e[0m" >>~/paperless.creds
+  msg_ok "Installed Adminer"
+fi
 
 msg_info "Setting up admin Paperless-ngx User & Password"
 ## From https://github.com/linuxserver/docker-paperless-ngx/blob/main/root/etc/cont-init.d/99-migrations
 cat <<EOF | python3 /opt/paperless/src/manage.py shell
 from django.contrib.auth import get_user_model
 UserModel = get_user_model()
-if len(UserModel.objects.all()) == 1:
-    user = UserModel.objects.create_user('admin', password='$DB_PASS')
-    user.is_superuser = True
-    user.is_staff = True
-    user.save()
+user = UserModel.objects.create_user('admin', password='$DB_PASS')
+user.is_superuser = True
+user.is_staff = True
+user.save()
 EOF
 echo "" >>~/paperless.creds
-echo "Paperless-ngx WebUI User" >>~/paperless.creds
-echo admin >>~/paperless.creds
-echo "Paperless-ngx WebUI Password" >>~/paperless.creds
-echo $DB_PASS >>~/paperless.creds
+echo -e "Paperless-ngx WebUI User: \e[32madmin\e[0m" >>~/paperless.creds
+echo -e "Paperless-ngx WebUI Password: \e[32m$DB_PASS\e[0m" >>~/paperless.creds
+echo "" >>~/paperless.creds
 msg_ok "Set up admin Paperless-ngx User & Password"
 
 msg_info "Creating Services"
@@ -193,9 +215,10 @@ $STD systemctl enable --now paperless-consumer paperless-webserver paperless-sch
 msg_ok "Created Services"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
+rm -rf /opt/paperless/docker
 $STD apt-get autoremove
 $STD apt-get autoclean
 msg_ok "Cleaned"

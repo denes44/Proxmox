@@ -23,7 +23,7 @@ var_disk="8"
 var_cpu="2"
 var_ram="2048"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -37,7 +37,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -54,10 +54,9 @@ function update_script() {
 header_info
 if [[ ! -d /usr/lib/unifi ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
 msg_info "Updating ${APP}"
-wget -qL https://get.glennr.nl/unifi/update/unifi-update.sh 
-bash unifi-update.sh
-msg_ok "Updated ${APP}"
-msg_ok "Update Successfull"
+apt-get update --allow-releaseinfo-change
+apt-get install -y unifi
+msg_ok "Updated Successfully"
 exit
 }
 

@@ -18,22 +18,37 @@ $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
 $STD apt-get install -y gnupg
-$STD apt-get install -y openjdk-8-jre-headless
 $STD apt-get install -y jsvc
-wget -qL https://repo.mongodb.org/apt/ubuntu/dists/bionic/mongodb-org/3.6/multiverse/binary-amd64/mongodb-org-server_3.6.23_amd64.deb
-$STD dpkg -i mongodb-org-server_3.6.23_amd64.deb
 msg_ok "Installed Dependencies"
 
-msg_info "Installing Omada Controller v5.9.31"
-wget -qL https://static.tp-link.com/upload/software/2023/202303/20230321/Omada_SDN_Controller_v5.9.31_Linux_x64.deb
-$STD dpkg -i Omada_SDN_Controller_v5.9.31_Linux_x64.deb 
-msg_ok "Installed Omada Controller"
+msg_info "Installing Azul Zulu"
+wget -qO /etc/apt/trusted.gpg.d/zulu-repo.asc "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB1998361219BD9C9"
+wget -q https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb
+$STD dpkg -i zulu-repo_1.0.0-3_all.deb
+$STD apt-get update
+$STD apt-get -y install zulu8-jdk
+msg_ok "Installed Azul Zulu"
+
+msg_info "Installing MongoDB"
+wget -qL http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
+$STD dpkg -i libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
+wget -qL https://repo.mongodb.org/apt/ubuntu/dists/bionic/mongodb-org/3.6/multiverse/binary-amd64/mongodb-org-server_3.6.23_amd64.deb
+$STD dpkg -i mongodb-org-server_3.6.23_amd64.deb
+msg_ok "Installed MongoDB"
+
+latest_url=$(curl -fsSL "https://www.tp-link.com/us/support/download/omada-software-controller/" | grep -o 'https://.*x64.deb' | head -n1)
+latest_version=$(basename "$latest_url" | sed -e 's/.*ller_//;s/_Li.*//')
+
+msg_info "Installing Omada Controller ${latest_version}"
+wget -qL ${latest_url}
+$STD dpkg -i Omada_SDN_Controller_${latest_version}_Linux_x64.deb
+msg_ok "Installed Omada Controller ${latest_version}"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
-rm -rf Omada_SDN_Controller_v5.9.9_Linux_x64.deb mongodb-org-server_3.6.23_amd64.deb
+rm -rf Omada_SDN_Controller_${latest_version}_Linux_x64.deb mongodb-org-server_3.6.23_amd64.deb zulu-repo_1.0.0-3_all.deb libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
 $STD apt-get autoremove
 $STD apt-get autoclean
 msg_ok "Cleaned"

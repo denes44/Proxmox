@@ -24,13 +24,13 @@ var_disk="0.3"
 var_cpu="1"
 var_ram="256"
 var_os="alpine"
-var_version="3.17"
+var_version="3.18"
 variables
 color
 catch_errors
 
 function default_settings() {
-  CT_TYPE="1"
+  CT_TYPE="0"
   PW=""
   CT_ID=$NEXTID
   HN=$NSAPP
@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -57,7 +57,7 @@ function update_script() {
   fi
   while true; do
     CHOICE=$(
-      whiptail --title "SUPPORT" --menu "Select option" 11 58 1 \
+      whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --menu "Select option" 11 58 1 \
         "1" "Check for Zigbee2MQTT Updates" 3>&2 2>&1 1>&3
     )
     exit_status=$?

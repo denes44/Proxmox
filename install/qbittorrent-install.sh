@@ -21,6 +21,14 @@ msg_ok "Installed Dependencies"
 
 msg_info "Installing qbittorrent-nox"
 $STD apt-get install -y qbittorrent-nox
+mkdir -p /.config/qBittorrent/
+cat <<EOF >/.config/qBittorrent/qBittorrent.conf
+[Preferences]
+WebUI\Password_PBKDF2="@ByteArray(amjeuVrF3xRbgzqWQmes5A==:XK3/Ra9jUmqUc4RwzCtrhrkQIcYczBl90DJw2rT8DFVTss4nxpoRhvyxhCf87ahVE3SzD8K9lyPdpyUCfmVsUg==)"
+WebUI\Port=8090
+WebUI\UseUPnP=false
+WebUI\Username=admin
+EOF
 msg_ok "qbittorrent-nox"
 
 msg_info "Creating Service"
@@ -38,7 +46,7 @@ systemctl enable -q --now qbittorrent-nox
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

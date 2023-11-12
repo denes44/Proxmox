@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -57,8 +57,7 @@ if [[ ! -f /etc/apt/sources.list.d/hyperion.list ]]; then msg_error "No ${APP} I
 msg_info "Updating ${APP} LXC"
 apt-get update &>/dev/null
 apt-get install -y hyperion &>/dev/null
-msg_ok "Updated ${APP} LXC"
-msg_ok "Update Successfull"
+msg_ok "Updated Successfully"
 exit
 }
 

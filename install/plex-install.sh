@@ -17,10 +17,9 @@ msg_info "Installing Dependencies"
 $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
-$STD apt-get install -y gnupg
 msg_ok "Installed Dependencies"
 
-if [[ -z "$(grep -w "100000" /proc/self/uid_map)" ]]; then
+if [[ "$CTTYPE" == "0" ]]; then
   msg_info "Setting Up Hardware Acceleration"
   $STD apt-get -y install \
     va-driver-all \
@@ -37,8 +36,8 @@ if [[ -z "$(grep -w "100000" /proc/self/uid_map)" ]]; then
 fi
 
 msg_info "Setting Up Plex Media Server Repository"
-$STD apt-key add <(curl -fsSL https://downloads.plex.tv/plex-keys/PlexSign.key)
-sh -c 'echo "deb [arch=$(dpkg --print-architecture)] https://downloads.plex.tv/repo/deb/ public main" > /etc/apt/sources.list.d/plexmediaserver.list'
+wget -qO- https://downloads.plex.tv/plex-keys/PlexSign.key >/etc/apt/trusted.gpg.d/PlexSign.asc
+echo "deb [arch=$(dpkg --print-architecture)] https://downloads.plex.tv/repo/deb/ public main" >/etc/apt/sources.list.d/plexmediaserver.list
 msg_ok "Set Up Plex Media Server Repository"
 
 msg_info "Installing Plex Media Server"
@@ -47,7 +46,7 @@ $STD apt-get -o Dpkg::Options::="--force-confold" install -y plexmediaserver
 msg_ok "Installed Plex Media Server"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

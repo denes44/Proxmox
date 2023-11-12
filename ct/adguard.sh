@@ -24,7 +24,7 @@ var_disk="2"
 var_cpu="1"
 var_ram="512"
 var_os="debian"
-var_version="11"
+var_version="12"
 variables
 color
 catch_errors
@@ -38,7 +38,7 @@ function default_settings() {
   CORE_COUNT="$var_cpu"
   RAM_SIZE="$var_ram"
   BRG="vmbr0"
-  NET=dhcp
+  NET="dhcp"
   GATE=""
   DISABLEIP6="no"
   MTU=""
@@ -54,12 +54,12 @@ function default_settings() {
 function update_script() {
 header_info
 if [[ ! -d /opt/AdGuardHome ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
+wget -qL https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
 msg_info "Stopping AdguardHome"
 systemctl stop AdGuardHome
 msg_ok "Stopped AdguardHome"
 
 msg_info "Updating AdguardHome"
-wget -qL https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
 tar -xvf AdGuardHome_linux_amd64.tar.gz &>/dev/null
 mkdir -p adguard-backup
 cp -r /opt/AdGuardHome/AdGuardHome.yaml /opt/AdGuardHome/data adguard-backup/
@@ -74,7 +74,7 @@ msg_ok "Started AdguardHome"
 msg_info "Cleaning Up"
 rm -rf AdGuardHome_linux_amd64.tar.gz AdGuardHome adguard-backup
 msg_ok "Cleaned"
-msg_ok "Update Successfull"
+msg_ok "Updated Successfully"
 exit
 }
 

@@ -17,8 +17,16 @@ msg_info "Installing Dependencies"
 $STD apt-get install -y curl
 $STD apt-get install -y sudo
 $STD apt-get install -y mc
+$STD apt-get install -y git
 $STD apt-get install -y cifs-utils
 msg_ok "Installed Dependencies"
+
+msg_info "Updating Python3"
+$STD apt-get install -y \
+  python3 \
+  python3-dev \
+  python3-pip
+msg_ok "Updated Python3"
 
 msg_info "Installing Motion"
 $STD apt-get install -y motion
@@ -30,31 +38,23 @@ msg_info "Installing FFmpeg"
 $STD apt-get install -y ffmpeg v4l-utils
 msg_ok "Installed FFmpeg"
 
-msg_info "Installing Python"
-$STD apt-get update
-$STD apt-get install -y python2
-curl -sSL https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-$STD python2 get-pip.py
-$STD apt-get install -y libffi-dev libzbar-dev libzbar0
-$STD apt-get install -y python2-dev libssl-dev libcurl4-openssl-dev libjpeg-dev
-msg_ok "Installed Python"
-
 msg_info "Installing MotionEye"
 $STD apt-get update
-$STD pip install motioneye
+$STD pip install git+https://github.com/motioneye-project/motioneye.git@dev
 mkdir -p /etc/motioneye
-cp /usr/local/share/motioneye/extra/motioneye.conf.sample /etc/motioneye/motioneye.conf
+chown -R root:root /etc/motioneye
+chmod -R 777 /etc/motioneye
+wget -qO /etc/motioneye/motioneye.conf https://raw.githubusercontent.com/motioneye-project/motioneye/dev/motioneye/extra/motioneye.conf.sample
 mkdir -p /var/lib/motioneye
 msg_ok "Installed MotionEye"
 
 msg_info "Creating Service"
-cp /usr/local/share/motioneye/extra/motioneye.systemd-unit-local /etc/systemd/system/motioneye.service
-$STD systemctl enable motioneye
-systemctl start motioneye
+wget -qO /etc/systemd/system/motioneye.service https://raw.githubusercontent.com/motioneye-project/motioneye/dev/motioneye/extra/motioneye.systemd
+systemctl enable -q --now motioneye
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

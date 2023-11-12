@@ -21,15 +21,27 @@ $STD apt-get install -y gnupg
 $STD apt-get install -y ca-certificates
 msg_ok "Installed Dependencies"
 
+read -r -p "Would you like to install v4 (experimental)? <y/N> " prompt
 msg_info "Installing Sonarr"
-$STD apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
-sh -c 'echo "deb https://apt.sonarr.tv/debian buster-develop main" > /etc/apt/sources.list.d/sonarr.list'
+wget -qO /etc/apt/trusted.gpg.d/sonarr-repo.asc "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2009837cbffd68f45bc180471f4f90de2a9b4bf8"
+echo "deb https://apt.sonarr.tv/debian testing-main main" >/etc/apt/sources.list.d/sonarr.list
 $STD apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" install -qqy sonarr &>/dev/null
+if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+  systemctl stop sonarr.service
+  wget -q -O SonarrV4.tar.gz 'https://services.sonarr.tv/v1/download/develop/latest?version=4&os=linux'
+  tar -xzf SonarrV4.tar.gz
+  cp -r Sonarr/* /usr/lib/sonarr/bin
+  rm -rf Sonarr SonarrV4.tar.gz
+  sed -i 's|ExecStart=/usr/bin/mono --debug /usr/lib/sonarr/bin/Sonarr.exe -nobrowser -data=/var/lib/sonarr|ExecStart=/usr/lib/sonarr/bin/Sonarr -nobrowser -data=/var/lib/sonarr|' /lib/systemd/system/sonarr.service
+  sed -i 's/\(User=\|Group=\).*/\1root/' /lib/systemd/system/sonarr.service
+  systemctl daemon-reload
+  systemctl start sonarr.service
+fi
 msg_ok "Installed Sonarr"
 
 motd_ssh
-root
+customize
 
 msg_info "Cleaning up"
 $STD apt-get autoremove

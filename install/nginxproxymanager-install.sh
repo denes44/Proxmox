@@ -5,7 +5,7 @@
 # License: MIT
 # https://github.com/tteck/Proxmox/raw/main/LICENSE
 
-source /dev/stdin <<< "$FUNCTIONS_FILE_PATH"
+source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 color
 verb_ip6
 catch_errors
@@ -21,55 +21,57 @@ $STD apt-get -y install \
   curl \
   gnupg \
   make \
-  g++ \
   gcc \
+  g++ \
   ca-certificates \
   apache2-utils \
   logrotate \
   build-essential \
-  python3-dev \
-  git \
-  lsb-release
+  git
 msg_ok "Installed Dependencies"
 
-msg_info "Installing Python"
-$STD apt-get install -y -q --no-install-recommends python3 python3-pip python3-venv
-$STD pip3 install --upgrade setuptools
-$STD pip3 install --upgrade pip
+msg_info "Installing Python Dependencies"
+$STD apt-get install -y \
+  python3 \
+  python3-dev \
+  python3-pip \
+  python3-venv \
+  python3-cffi \
+  python3-certbot \
+  python3-certbot-dns-cloudflare
+$STD pip3 install certbot_dns_porkbun
+$STD pip3 install certbot-dns-duckdns
 $STD python3 -m venv /opt/certbot/
-if [ "$(getconf LONG_BIT)" = "32" ]; then
-  $STD python3 -m pip install --no-cache-dir -U cryptography==3.3.2
-fi
-$STD python3 -m pip install --no-cache-dir cffi certbot certbot-dns-cloudflare
-msg_ok "Installed Python"
+msg_ok "Installed Python Dependencies"
+
+VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
 
 msg_info "Installing Openresty"
-$STD apt-key add <(curl -fsSL https://openresty.org/package/pubkey.gpg)
-sh -c 'echo "deb http://openresty.org/package/debian $(lsb_release -cs) openresty" > /etc/apt/sources.list.d/openresty.list'
-$STD apt-get -y update
-$STD apt-get -y install --no-install-recommends openresty
+wget -qO - https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/openresty-archive-keyring.gpg
+echo -e "deb http://openresty.org/package/debian bullseye openresty" >/etc/apt/sources.list.d/openresty.list
+$STD apt-get update
+$STD apt-get -y install openresty
 msg_ok "Installed Openresty"
 
-msg_info "Setting up Node.js Repository"
-$STD bash <(curl -fsSL https://deb.nodesource.com/setup_16.x)
-msg_ok "Set up Node.js Repository"
-
 msg_info "Installing Node.js"
-$STD apt-get install -y nodejs
+$STD bash <(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh)
+. ~/.bashrc
+$STD nvm install 16.20.1
+ln -sf /root/.nvm/versions/node/v16.20.1/bin/node /usr/bin/node
 msg_ok "Installed Node.js"
 
 msg_info "Installing Yarn"
-$STD npm install --global yarn
+$STD npm install -g yarn
 msg_ok "Installed Yarn"
 
 RELEASE=$(curl -s https://api.github.com/repos/NginxProxyManager/nginx-proxy-manager/releases/latest |
   grep "tag_name" |
   awk '{print substr($2, 3, length($2)-4) }')
 
-msg_info "Downloading Nginx Proxy Manager v2.10.2"
-wget -q https://codeload.github.com/NginxProxyManager/nginx-proxy-manager/tar.gz/v2.10.2 -O - | tar -xz
-cd ./nginx-proxy-manager-2.10.2
-msg_ok "Downloaded Nginx Proxy Manager v2.10.2"
+msg_info "Downloading Nginx Proxy Manager v${RELEASE}"
+wget -q https://codeload.github.com/NginxProxyManager/nginx-proxy-manager/tar.gz/v${RELEASE} -O - | tar -xz
+cd ./nginx-proxy-manager-${RELEASE}
+msg_ok "Downloaded Nginx Proxy Manager v${RELEASE}"
 
 msg_info "Setting up Enviroment"
 ln -sf /usr/bin/python3 /usr/bin/python
@@ -77,8 +79,8 @@ ln -sf /usr/bin/certbot /opt/certbot/bin/certbot
 ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/sbin/nginx
 ln -sf /usr/local/openresty/nginx/ /etc/nginx
 
-sed -i "s+0.0.0+2.10.2+g" backend/package.json
-sed -i "s+0.0.0+2.10.2+g" frontend/package.json
+sed -i "s+0.0.0+${RELEASE}+g" backend/package.json
+sed -i "s+0.0.0+${RELEASE}+g" frontend/package.json
 
 sed -i 's+^daemon+#daemon+g' docker/rootfs/etc/nginx/nginx.conf
 NGINX_CONFS=$(find "$(pwd)" -type f -name "*.conf")
@@ -117,15 +119,14 @@ chown root /tmp/nginx
 echo resolver "$(awk 'BEGIN{ORS=" "} $1=="nameserver" {print ($2 ~ ":")? "["$2"]": $2}' /etc/resolv.conf);" >/etc/nginx/conf.d/include/resolvers.conf
 
 if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
-  echo -en "${GN} Generating dummy SSL Certificate... "
   openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=Nginx Proxy Manager/OU=Dummy Certificate/CN=localhost" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem &>/dev/null
 fi
 
 mkdir -p /app/global /app/frontend/images
 cp -r backend/* /app
 cp -r global/* /app/global
-wget -q "https://github.com/just-containers/s6-overlay/releases/download/v3.1.4.1/s6-overlay-noarch.tar.xz"
-wget -q "https://github.com/just-containers/s6-overlay/releases/download/v3.1.4.1/s6-overlay-x86_64.tar.xz"
+wget -q "https://github.com/just-containers/s6-overlay/releases/download/v3.1.5.0/s6-overlay-noarch.tar.xz"
+wget -q "https://github.com/just-containers/s6-overlay/releases/download/v3.1.5.0/s6-overlay-x86_64.tar.xz"
 tar -C / -Jxpf s6-overlay-noarch.tar.xz
 tar -C / -Jxpf s6-overlay-x86_64.tar.xz
 msg_ok "Set up Enviroment"
@@ -182,10 +183,10 @@ EOF
 msg_ok "Created Service"
 
 motd_ssh
-root
+customize
 
 msg_info "Starting Services"
-sed -i -e 's/^pid/#pid/' -e 's/npmuser/root/' /usr/local/openresty/nginx/conf/nginx.conf
+sed -i 's/user npm/user root/g; s/^pid/#pid/g' /usr/local/openresty/nginx/conf/nginx.conf
 sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' /opt/certbot/pyvenv.cfg
 $STD systemctl enable --now openresty
 $STD systemctl enable --now npm
